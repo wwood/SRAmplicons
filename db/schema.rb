@@ -11,7 +11,12 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120806043008) do
+ActiveRecord::Schema.define(:version => 20121022131429) do
+
+  create_table "cluster_taxonomies", :force => true do |t|
+    t.string  "cluster"
+    t.integer "taxonomy_id"
+  end
 
   create_table "clusters", :force => true do |t|
     t.string   "name"
