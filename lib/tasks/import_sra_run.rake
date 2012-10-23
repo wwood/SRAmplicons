@@ -3,10 +3,6 @@ require 'csv'
 
 desc "import an assigned taxonomy output of clustered sequences"
 task :import_sra_run, [:glob] => :environment do |t, args|
-  
-  #ActiveRecord::Base.connect
-  ClusterTaxonomy.first
-  
   # Get a list of the assigned_taxonomy files that we are working with here
   glob = args[:glob]
   assigned_taxonomies = Dir.glob(glob)
@@ -17,6 +13,7 @@ task :import_sra_run, [:glob] => :environment do |t, args|
     
     cluster1 = nil
     taxonomy1 = nil
+    run_identifier1 = nil
     values_to_insert = []
     count = 0
     
@@ -31,27 +28,28 @@ task :import_sra_run, [:glob] => :environment do |t, args|
     primary_key = first_primary_key
     
     execute_sql = lambda do
-      ActiveRecord::Base.connection.execute "INSERT INTO cluster_taxonomies select #{first_primary_key} as 'id', '#{cluster1}' as 'cluster_name', #{taxonomy1} as taxonomy_id #{values_to_insert.join(" ")}"
+      ActiveRecord::Base.connection.execute "INSERT INTO cluster_taxonomies select #{first_primary_key} as 'id', '#{cluster1}' as 'cluster_name', #{taxonomy1} as taxonomy_id, '#{run_identifier1}' as 'run_identifier'  #{values_to_insert.join(" ")}"
     end
     
     CSV.foreach(assigned_taxonomy_file, :col_sep => "\t") do |row|
       cluster_id = row[0]
       taxonomy_id = row[3]
+      run_identifier = cluster_id.split('.')[0]
       
-      if taxonomy_id == '-'
-        #values_to_insert.push "(\"#{cluster_id}\", NULL)"
-      else
+      unless taxonomy_id == '-'
         if cluster1.nil?
+          #$stderr.puts [cluster_id, taxonomy_id, run_identifier].join("\t")
           cluster1 = cluster_id
           taxonomy1 = taxonomy_id
+          run_identifier1 = run_identifier
         else
-          values_to_insert.push " union select #{primary_key}, '#{cluster_id}', #{taxonomy_id}"
+          values_to_insert.push " union select #{primary_key}, '#{cluster_id}', #{taxonomy_id}, '#{run_identifier}'"
         end
         primary_key += 1
       end
       count += 1
       
-      if count == 500
+      if count == 500 #sqlite doesn't handle bigger than this, by default
         $stderr.puts "Running sql command since max of 500 was reached"
         execute_sql.call
         
