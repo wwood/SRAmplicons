@@ -1,0 +1,2 @@
+class SraController < ApplicationController
+end
