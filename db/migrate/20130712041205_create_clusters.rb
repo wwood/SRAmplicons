@@ -8,6 +8,7 @@ class CreateClusters < ActiveRecord::Migration
       t.decimal :best_hit_percent_identity
       t.integer :best_hit_length
       t.string :best_hit_cigar
+      t.string :representative_sequence
     end
   end
 end

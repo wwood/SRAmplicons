@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130712041205) do
+ActiveRecord::Schema.define(version: 20130712051435) do
 
   create_table "clusters", force: true do |t|
     t.string  "sra_run_id",                null: false
@@ -21,7 +21,10 @@ ActiveRecord::Schema.define(version: 20130712041205) do
     t.decimal "best_hit_percent_identity"
     t.integer "best_hit_length"
     t.string  "best_hit_cigar"
+    t.string  "representative_sequence"
   end
+
+  add_index "clusters", ["sra_run_id"], name: "index_clusters_on_sra_run_id"
 
   create_table "taxonomies", force: true do |t|
     t.integer "taxonomy_id", null: false
@@ -33,5 +36,7 @@ ActiveRecord::Schema.define(version: 20130712041205) do
     t.string  "genus"
     t.string  "species"
   end
+
+  add_index "taxonomies", ["taxonomy_id"], name: "index_taxonomies_on_taxonomy_id"
 
 end
