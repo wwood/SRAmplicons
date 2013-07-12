@@ -1,5 +1,9 @@
 source 'https://rubygems.org'
 
+
+gem 'systemu'
+#gem 'bio-sra'
+
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.0.0'
 
