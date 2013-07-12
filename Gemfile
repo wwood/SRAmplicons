@@ -2,7 +2,10 @@ source 'https://rubygems.org'
 
 
 gem 'systemu'
+gem 'bio'
 #gem 'bio-sra'
+#gem 'bio-krona'
+gem 'bio-logger'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.0.0'

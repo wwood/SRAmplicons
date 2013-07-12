@@ -30,13 +30,11 @@ ActiveRecord::Schema.define(version: 20130712051435) do
     t.integer "taxonomy_id", null: false
     t.string  "kingdom"
     t.string  "phylum"
-    t.string  "class"
+    t.string  "class_name"
     t.string  "order"
     t.string  "family"
     t.string  "genus"
     t.string  "species"
   end
-
-  add_index "taxonomies", ["taxonomy_id"], name: "index_taxonomies_on_taxonomy_id"
 
 end

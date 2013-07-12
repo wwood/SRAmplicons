@@ -39,7 +39,7 @@ Sramplicons::Application.routes.draw do
   #       get 'recent', on: :collection
   #     end
   #   end
-  
+
   # Example resource route with concerns:
   #   concern :toggleable do
   #     post 'toggle'
@@ -53,4 +53,7 @@ Sramplicons::Application.routes.draw do
   #     # (app/controllers/admin/products_controller.rb)
   #     resources :products
   #   end
+
+  get 'sramplicons/run/:run_id' => 'sramplicons#run'
+  get 'sramplicons/run_iframe/:run_id' => 'sramplicons#run_iframe'
 end

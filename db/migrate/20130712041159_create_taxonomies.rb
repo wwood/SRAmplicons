@@ -5,7 +5,7 @@ class CreateTaxonomies < ActiveRecord::Migration
 
       t.string :kingdom
       t.string :phylum
-      t.string :class
+      t.string :class_name
       t.string :order
       t.string :family
       t.string :genus

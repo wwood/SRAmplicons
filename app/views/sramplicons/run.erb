@@ -1,0 +1,12 @@
+
+<div class="container-fluid">
+  <div class="hero-unit">
+    <h2><%= @run.run_accession %></h2>
+    <h2><small>from</small> <%= @run.study_title %></h2>
+    <p><%= @run.study_abstract %></p>
+    <p><%= link_to 'view', "http://www.ncbi.nlm.nih.gov/sra?term=#{@run.run_accession}" %> this run at NCBI</p>
+  </div>
+
+  <iframe src="/sramplicons/run_iframe/<%= @run_id %>" width="100%" height="900">
+  </iframe>
+</div>
