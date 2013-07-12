@@ -1,2 +1,0 @@
-class SraController < ApplicationController
-end
