@@ -1,0 +1,47 @@
+<div class="container">
+  <div class="hero-unit">
+    <h1>SRAmplicons</h1>
+    <p>Explore 16S pyrotag data deposited into the Sequence Read Archive (SRA)</p>
+  </div>
+
+  <div class="row">
+    <div class=span12>
+      <h2>Philosophy</h2>
+      <p>The recent rise in next-generation sequencing has resulted in a large numbers of 16S amplicon sequences being
+      generated. Unfortunately while many more sequences are being generated, the newly generated sequences
+      are relatively short.
+      This makes it increasinlgy difficult to ask a basic question in microbial ecology:</p>
+      <blockquote>
+      <p>Where has humanity encountered this lineage before?</p>
+      </blockquote>
+      <p>While SRAmplicons cannot account for all of humanity, it is able to provide an incomplete answer.
+      Using the <%= link_to 'SRAdb', 'http://bioconductor.org/packages/release/bioc/html/SRAdb.html' %> to
+      screen the SRA for 16S pyrosequencing datasets, <%= Cluster.select('distinct(sra_run_id)').count %> datasets
+      were error-corrected, OTU clustered, assigned taxonomy and transformed into this web-accessible resource.
+    </div>
+  </div>
+
+  <div class="row">
+    <div class=span12>
+      <h2>Usage</h2>
+      <p>There are several ways to find studies that have previously observed particular lineages:</p>
+      <ul>
+        <li><%= link_to 'Search', search_url %> by taxonomy</li>
+        <li><%= link_to 'Search', search_url %> by prokMSA identifier</li>
+        <li>BLAST search against clustered OTUs (coming soon)</li>
+        <li>Download flat-files (coming soon)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class=span12>
+      <h2>Citation</h2>
+      <p>A manuscript describing SRAmplicons is currently in preparation:</p>
+      <blockquote>
+      <p>Ben Woodcroft, Jack Zhu and Gene Tyson. <i>Querying sequence read archive
+      16S pyrosequence with SRAmplicons.</i></p>
+      </blockquote>
+    </div>
+  </div>
+</div>

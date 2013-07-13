@@ -1,0 +1,37 @@
+<div class="container">
+  <h2><%= @example_run.study_title %> (<%= @study_id %>)</h2>
+  <% if @mode == :prokmsa %>
+    <h3>Runs observing these <%= @prokmsa_ids.length %> taxonomy identifier(s):</h3>
+  <% else %>
+    <h3>Runs observing <%= @taxonomy_id %></h3>
+  <% end %>
+  <table class="table">
+    <tr>
+      <th></th>
+      <th>Run</th>
+      <th>Relative abundance</th>
+    </tr>
+    <% @runs_and_relative_abundance.each_with_index do |run_rel, i|
+      run_id = run_rel[0]; relative_abundance = run_rel[1] %>
+      <tr><td><%=i+1%></td>
+      <td><%= link_to run_id, run_url(run_id) %></td>
+      <td><%= relative_abundance %>%</td>
+      </tr>
+    <% end %>
+  </table>
+  <h3>Runs not observing</h3>
+  <table class="table">
+    <tr>
+      <th></th>
+      <th>Run</th>
+    </tr>
+    <% observing_runs = @runs_and_relative_abundance.collect{|a| a[0]}
+    non_observed_runs = @all_run_ids.reject{|r| observing_runs.include?(r)}
+    non_observed_runs.sort.each_with_index do |run_id, i| %>
+      <% next if observing_runs.include?(run_id) %>
+      <tr><td><%=i+1%></td>
+      <td><%= link_to run_id, run_url(run_id) %></td>
+      </tr>
+    <% end %>
+  </table>
+</div>

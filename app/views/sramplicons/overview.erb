@@ -1,0 +1,19 @@
+<div class="container">
+  <h1>Studies observing these <%= @taxonomy_ids.length %> taxonomy identifier(s)</h1>
+  <table class="table">
+    <tr>
+      <th></th>
+      <th>Project</th>
+      <th>Title</th>
+      <th>Max abundance</th>
+    </tr>
+    <% @grouped_clusters.each_with_index do |proj_cl, i|
+      cluster = proj_cl.cluster %>
+      <tr><td><%=i+1%></td>
+      <td><%= link_to cluster.sra.study_accession, study_with_prokmsa_ids_url(cluster.sra_run_id, @taxonomy_ids.join(',')) %></td>
+      <td><%= cluster.sra.study_title %></td>
+      <td><%= link_to "#{proj_cl.human_max_percent}%", run_url(cluster.sra_run_id) %></td>
+      </tr>
+    <% end %>
+  </table>
+</div>

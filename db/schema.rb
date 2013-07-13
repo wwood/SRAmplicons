@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130712051435) do
+ActiveRecord::Schema.define(version: 20130713050124) do
 
   create_table "clusters", force: true do |t|
     t.string  "sra_run_id",                null: false
@@ -24,6 +24,8 @@ ActiveRecord::Schema.define(version: 20130712051435) do
     t.string  "representative_sequence"
   end
 
+  add_index "clusters", ["best_hit_id"], name: "index_clusters_on_best_hit_id"
+  add_index "clusters", ["num_sequences"], name: "index_clusters_on_num_sequences"
   add_index "clusters", ["sra_run_id"], name: "index_clusters_on_sra_run_id"
 
   create_table "taxonomies", force: true do |t|
@@ -36,5 +38,14 @@ ActiveRecord::Schema.define(version: 20130712051435) do
     t.string  "genus"
     t.string  "species"
   end
+
+  add_index "taxonomies", ["class_name"], name: "index_taxonomies_on_class_name"
+  add_index "taxonomies", ["family"], name: "index_taxonomies_on_family"
+  add_index "taxonomies", ["genus"], name: "index_taxonomies_on_genus"
+  add_index "taxonomies", ["kingdom"], name: "index_taxonomies_on_kingdom"
+  add_index "taxonomies", ["order"], name: "index_taxonomies_on_order"
+  add_index "taxonomies", ["phylum"], name: "index_taxonomies_on_phylum"
+  add_index "taxonomies", ["species"], name: "index_taxonomies_on_species"
+  add_index "taxonomies", ["taxonomy_id"], name: "index_taxonomies_on_taxonomy_id"
 
 end

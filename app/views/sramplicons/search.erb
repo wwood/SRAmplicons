@@ -1,0 +1,25 @@
+<div class="container">
+  <h1>Search for SRA studies by taxonomy</h1>
+
+  <div class="row">
+    <div class="span12">
+      <h2>Search by taxonomy</h2>
+      <form action='taxonomy'>
+        <p>Please input a taxonomy</p>
+        <input type="textarea" rows="3" cols="25" name="q"/>
+        <input class="btn" type="submit" />
+      </form>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="span12">
+      <h2>Search by prokMSA identifier(s)</h2>
+      <form action='overview'>
+        <p>Please input a whitespace or comma-separated list:</p>
+        <input type="textarea" rows="3" cols="25" name="tax_ids">155406, 4417848</input>
+        <input class="btn" type="submit">search</input>
+      </form>
+    </div>
+  </div>
+</div>
