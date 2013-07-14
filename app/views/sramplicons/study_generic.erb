@@ -1,0 +1,36 @@
+<div class="container">
+  <h2><%= @example_run.study_title %> (<%= @study_id %>)</h2>
+
+  <p><%= @example_run.study_abstract %></p>
+  <% unless @example_run.study_abstract == @example_run.study_description %>
+    <p><%= @example_run.study_description %></p>
+  <% end %>
+
+  <ul>
+    <li>Submitted <%= @example_run.submission_date %></li>
+    <li><%= link_to 'View', "http://www.ncbi.nlm.nih.gov/sra?term=#{@example_run.study_accession}" %> this study at NCBI</li>
+    <% if @pubmed_id %><li><%= link_to 'PubMed publication', "http://www.ncbi.nlm.nih.gov/pubmed?term=#{@pubmed_id}" %> (<%= link_to 'full text', 'http://fail' %>)</li><% end %>
+    <li><%= link_to 'Search', scholar_url(@example_run) %> for publications referring to this study by accession</li>
+  </ul>
+
+
+
+  <h3>Runs in this study</h3>
+  <table class="table">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Run</th>
+        <th># Pyrotags</th>
+      </tr>
+    </thead>
+
+    <% @runs.each_with_index do |run, i| %>
+      <tr>
+        <td><%=i+1%></td>
+        <td><%= link_to run.run_accession, run_url(run.run_accession) %></td>
+        <td><%= Cluster.select('sum(num_sequences) as num_sequences').where(sra_run_id: run.run_accession).first.num_sequences %></td>
+      </tr>
+    <% end %>
+  </table>
+</div>

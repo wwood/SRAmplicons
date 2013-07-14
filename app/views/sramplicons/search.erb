@@ -5,9 +5,9 @@
     <div class="span12">
       <h2>Search by taxonomy</h2>
       <form action='taxonomy'>
-        <p>Please input a taxonomy</p>
-        <input type="textarea" rows="3" cols="25" name="q"/>
-        <input class="btn" type="submit" />
+        <p>A taxonomy</p>
+        <input type="textarea" rows="3" cols="25" name="q" placeholder="f__ANME-2D"/>
+        <input class="btn" type="submit" value="Search" />
       </form>
     </div>
   </div>
@@ -16,9 +16,31 @@
     <div class="span12">
       <h2>Search by prokMSA identifier(s)</h2>
       <form action='overview'>
-        <p>Please input a whitespace or comma-separated list:</p>
-        <input type="textarea" rows="3" cols="25" name="tax_ids">155406, 4417848</input>
-        <input class="btn" type="submit">search</input>
+        <p>A whitespace or comma-separated list</p>
+        <input type="textarea" rows="3" cols="25" name="tax_ids" placeholder="155406, 4417848"></input>
+        <input class="btn" type="submit" value="Search" />
+      </form>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="span12">
+      <h2>Search studies by accession</h2>
+      <form action='search_by_sra'>
+        <p>An SRA accession</p>
+        <input type="textarea" rows="3" cols="25" name="accession" placeholder="SRR617581"></input>
+        <input class="btn" type="submit" value="Search" />
+      </form>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="span12">
+      <h2>Search studies by keyword</h2>
+      <form action='search_by_keyword'>
+        <p>A single keyword</p>
+        <input type="textarea" rows="3" cols="25" name="keyword" placeholder="methane"></input>
+        <input class="btn" type="submit" value="Search" />
       </form>
     </div>
   </div>

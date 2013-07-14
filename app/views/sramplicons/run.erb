@@ -8,10 +8,11 @@
     <% end %>
 
     <ul>
-      <li>Submitted <%= @run.submission_date %></li>
+      <li>This is <%=@run.run_accession%>, submitted <%= @run.submission_date %></li>
+      <li><%=link_to 'View', study_url(@run.study_accession)%> other runs in this study</li>
       <li><%= link_to 'View', "http://www.ncbi.nlm.nih.gov/sra?term=#{@run.run_accession}" %> this run at NCBI</li>
       <% if @pubmed_id %><li><%= link_to 'PubMed publication', "http://www.ncbi.nlm.nih.gov/pubmed?term=#{@pubmed_id}" %> (<%= link_to 'full text', 'http://fail' %>)</li><% end %>
-      <li><%= link_to 'Search', "http://scholar.google.com.au/scholar?q=#{@google_scholar_query}&hl=en&as_sdt=2001&as_sdtp=on" %> for publications refering to this study by accession</li>
+      <li><%= link_to 'Search', scholar_url(@run) %> for publications referring to this study by accession</li>
     </ul>
 
     <% if @run.sample_attribute %>
@@ -34,5 +35,5 @@
   </div>
 </div>
 
-  <iframe src="/sramplicons/run_iframe/<%= @run_id %>" width="100%" height="1000" style="border: none">
+  <iframe  src="<%= run_iframe_url(@run.run_accession) %>" width="100%" height="1000" style="border: none">
   </iframe>

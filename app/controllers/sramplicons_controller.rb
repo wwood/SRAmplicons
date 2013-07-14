@@ -4,6 +4,11 @@ require 'pp'
 class SrampliconsController < ApplicationController
   @@confident_assignment_clause = 'best_hit_length > 99 and best_hit_percent_identity >= 97'
 
+  def index
+    @num_datasets = Cluster.select('distinct(sra_run_id)').count
+    @num_pyrotags = Cluster.select('sum(num_sequences) as num_sequences').first.num_sequences
+  end
+
   def run
     @run_id = params['run_id']
 
@@ -11,19 +16,9 @@ class SrampliconsController < ApplicationController
     raise unless runs.length == 1
     @run = runs[0]
 
-
     if !@run.study_entrez_link.nil?
       @pubmed_id = @run.study_entrez_link.split(': ')[1]
     end
-
-    @google_scholar_query = '"'+[
-      @run.run_accession,
-      @run.sample_accession,
-      @run.study_accession,
-      @run.experiment_accession,
-      @run.submission_accession,
-    ].join('" or "')+'"'
-
   end
 
 
@@ -103,7 +98,7 @@ class SrampliconsController < ApplicationController
       column = Taxonomy.guess_column_from_name(@taxonomy_id)
       @taxonomy_where_column = "taxonomies.#{column}"
       @run_ids = Cluster.joins(:taxonomy).where(
-        @taxonomy_where_clause).where(
+        @taxonomy_where_column => @taxonomy_id).where(
         sra_run_id: @all_run_ids).select('distinct(sra_run_id)').collect do |cluster|
         cluster.sra_run_id
       end
@@ -124,11 +119,41 @@ class SrampliconsController < ApplicationController
 
       @runs_and_relative_abundance.push([
         run_id,
-        HumanMaxPercent.human_max(relative_abundance)
+        relative_abundance
       ])
     end
     @runs_and_relative_abundance.sort! do |a,b|
-      (a[1] <=> b[1])
+      -(a[1] <=> b[1])
+    end
+  end
+
+  def study_generic
+    @study_id = params['study_id']
+    @example_run = Bio::SRA::Tables::SRA.where(study_accession: @study_id).first
+    @runs = Bio::SRA::Tables::SRA.where(study_accession: @study_id)
+  end
+
+  def search_by_sra
+    query = params['accession'].strip
+    column = Bio::SRA::Accession.accession_to_column_name query
+    eg = Bio::SRA::Tables::SRA.where(column => query).first
+    redirect_to study_url(eg.study_accession)
+  end
+
+  def search_by_keyword
+    #Would be faster if there was just a single database here so a proper
+    # join could be done. Oh well.
+    # Better yet would be a proper text searching framework. Should I leave this to NCBI?
+    @keyword = params['keyword'].strip
+    for_sql = "%#{@keyword}%"
+    sra_run_ids = Bio::SRA::Tables::SRA.where(
+      'study_abstract like ? or study_description like ?',for_sql,for_sql).select(
+      'run_accession').collect{|s| s.run_accession}
+    cap = 10000
+    @example_clusters = Cluster.where(:sra_run_id => sra_run_ids).select('distinct(sra_run_id)').limit(cap).to_a
+    @possibly_more = (@example_clusters.length == cap)
+    @example_clusters.uniq! do |c|
+      c.sra.study_accession
     end
   end
 
@@ -165,9 +190,6 @@ class SrampliconsController < ApplicationController
       -(a.max_percentage <=> b.max_percentage)
     end
   end
-
-  def order_initial_clusters_runwise(initial_clusters, activerecord_fragment)
-  end
 end
 
 
@@ -183,10 +205,10 @@ end
 
 class HumanMaxPercent
   def self.human_max(decimal)
-    if decimal < 0.01
-      '<1'
+    if decimal < 0.001
+      '<0.1'
     else
-      "#{(decimal*100).round}"
+      "#{(decimal*100).round(1)}"
     end
   end
 end

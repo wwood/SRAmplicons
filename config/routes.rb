@@ -54,13 +54,16 @@ Sramplicons::Application.routes.draw do
   #     resources :products
   #   end
 
-  get 'sramplicons/run/:run_id' => 'sramplicons#run', as: :run
-  get 'sramplicons/run_iframe/:run_id' => 'sramplicons#run_iframe'
-  get 'sramplicons/overview/:tax_ids' => 'sramplicons#overview', as: :overview
-  get 'sramplicons/search' => 'sramplicons#search', as: :search
-  get 'sramplicons/overview' => 'sramplicons#overview'
-  get 'sramplicons/taxonomy' => 'sramplicons#taxonomy'
-  get 'sramplicons' => 'sramplicons#index', as: :index
-  get 'sramplicons/study/:study_id/prokmsa_ids/:prokmsa_ids' => 'sramplicons#study', :as => :study_with_prokmsa_ids
-  get 'sramplicons/study/:study_id/taxonomy/:taxonomy_id' => 'sramplicons#study', :as => :study_with_taxonomy
+  get 'run/:run_id' => 'sramplicons#run', as: :run
+  get 'run_iframe/:run_id' => 'sramplicons#run_iframe', as: :run_iframe
+  get 'overview/:tax_ids' => 'sramplicons#overview', as: :overview
+  get 'search' => 'sramplicons#search', as: :search
+  get 'overview' => 'sramplicons#overview'
+  get 'taxonomy' => 'sramplicons#taxonomy'
+  get '' => 'sramplicons#index', as: :index
+  get 'study/:study_id/prokmsa_ids/:prokmsa_ids' => 'sramplicons#study', :as => :study_with_prokmsa_ids
+  get 'study/:study_id/taxonomy/:taxonomy_id' => 'sramplicons#study', :as => :study_with_taxonomy
+  get 'study/:study_id' => 'sramplicons#study_generic', :as => :study
+  get 'search_by_sra' => 'sramplicons#search_by_sra'
+  get 'search_by_keyword' => 'sramplicons#search_by_keyword'
 end

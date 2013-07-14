@@ -1,0 +1,20 @@
+<div class="container">
+  <h2>Studies described with '<%=@keyword%>'</h2>
+  <table class="table">
+    <thead><tr>
+      <td></td>
+      <th>Accession</th>
+      <th>Title</th>
+    </tr></thead>
+  <% @example_clusters.each_with_index do |cluster, i| %>
+    <tr>
+      <td><%=i+1%></td>
+      <td><%=link_to cluster.sra.study_accession, study_url(cluster.sra.study_accession)%></td>
+      <td><%=cluster.sra.study_title%></td>
+    </tr>
+  <% end %>
+
+  <% if @possibly_more %>
+    <p>Result list truncated for performance reasons - there may be more studies matching the search term.</p>
+  <% end %>
+</div>

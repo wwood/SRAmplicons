@@ -16,8 +16,9 @@
       </blockquote>
       <p>While SRAmplicons cannot account for all of humanity, it is able to provide an incomplete answer.
       Using the <%= link_to 'SRAdb', 'http://bioconductor.org/packages/release/bioc/html/SRAdb.html' %> to
-      screen the SRA for 16S pyrosequencing datasets, <%= Cluster.select('distinct(sra_run_id)').count %> datasets
+      screen the SRA for 16S pyrosequence, <%= number_with_delimiter @num_datasets %> datasets
       were error-corrected, OTU clustered, assigned taxonomy and transformed into this web-accessible resource.
+      This current version includes <%= number_with_delimiter @num_pyrotags %> pyrotags.
     </div>
   </div>
 
@@ -28,6 +29,9 @@
       <ul>
         <li><%= link_to 'Search', search_url %> by taxonomy</li>
         <li><%= link_to 'Search', search_url %> by prokMSA identifier</li>
+        <li><%= link_to 'Search', search_url %> keyword</li>
+        <li><%= link_to 'Search', search_url %> SRA accession</li>
+        <li>Browse projects (coming soon)</li>
         <li>BLAST search against clustered OTUs (coming soon)</li>
         <li>Download flat-files (coming soon)</li>
       </ul>
@@ -42,6 +46,20 @@
       <p>Ben Woodcroft, Jack Zhu and Gene Tyson. <i>Querying sequence read archive
       16S pyrosequence with SRAmplicons.</i></p>
       </blockquote>
+      <p>This resource was built using
+      <%=link_to 'SRAdb', 'http://bioconductor.org/packages/release/bioc/html/SRAdb.html' %>,
+      <%=link_to 'Ruby', 'http://ruby-lang.org'%>,
+      <%=link_to 'Biogems', 'http://biogems.info'%>,
+      <%=link_to 'Acacia', 'http://sourceforge.net/projects/acaciaerrorcorr'%>,
+      <%=link_to 'CD-HIT','http://weizhong-lab.ucsd.edu/cd-hit/'%>,
+      <%=link_to 'BWA', 'http://bio-bwa.sourceforge.net/'%>,
+      <%=link_to 'Ruby on Rails', 'http://rubyonrails.org'%>,
+      <%=link_to 'Bootstrap','http://twitter.github.io/bootstrap'%>,
+      <%=link_to 'Krona','https://sourceforge.net/p/krona/'%>,
+      and <%=link_to 'SQLite','https://sqlite.org/'%>,
+      among others. Code for both the <%= link_to 'preparatory steps', 'https://github.com/wwood/sra_16S_scripts'%>
+      and <%= link_to 'this website (coming soon)', 'https://github.com/wwood/sramplicons' %>
+      are available as free software.</p>
     </div>
   </div>
 </div>
