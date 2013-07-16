@@ -58,12 +58,14 @@ Sramplicons::Application.routes.draw do
   get 'run_iframe/:run_id' => 'sramplicons#run_iframe', as: :run_iframe
   get 'overview/:tax_ids' => 'sramplicons#overview', as: :overview
   get 'search' => 'sramplicons#search', as: :search
-  get 'overview' => 'sramplicons#overview'
-  get 'taxonomy' => 'sramplicons#taxonomy'
+  get 'prokmsa_ids' => 'sramplicons#prokmsa', :as => :search_by_prokmsa
+  get 'taxonomy' => 'sramplicons#taxonomy', :as => :search_by_taxonomy
   get '' => 'sramplicons#index', as: :index
   get 'study/:study_id/prokmsa_ids/:prokmsa_ids' => 'sramplicons#study', :as => :study_with_prokmsa_ids
   get 'study/:study_id/taxonomy/:taxonomy_id' => 'sramplicons#study', :as => :study_with_taxonomy
   get 'study/:study_id' => 'sramplicons#study_generic', :as => :study
-  get 'search_by_sra' => 'sramplicons#search_by_sra'
-  get 'search_by_keyword' => 'sramplicons#search_by_keyword'
+  get 'search_by_sra' => 'sramplicons#search_by_sra', :as => :search_by_sra
+  get 'search_by_keyword' => 'sramplicons#search_by_keyword', :as => :search_by_keyword
+
+  get 'play' => 'sramplicons#play'
 end

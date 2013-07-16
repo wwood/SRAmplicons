@@ -1,0 +1,12 @@
+<div class="container">
+  <p><%= Cluster.select('distinct(sra_run_id)').reduce(0){|old, c|
+    p c
+    p c.sra.run_accession unless c.sra.nil?;
+
+
+    if c.sra and !c.sra.longitude_latitude.nil?
+      old += 1
+    end
+    old
+  }%> appear to have longitude and latitude metadata.</p></div>
+</div>

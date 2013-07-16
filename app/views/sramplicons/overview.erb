@@ -1,5 +1,12 @@
 <div class="container">
-  <h1>Studies observing these <%= @taxonomy_ids.length %> taxonomy identifier(s)</h1>
+  <% if @mode == :prokmsa %>
+  <h1>Studies observing these <%= @taxonomy_ids.length %> taxonomy identifier(s)<%if @confident_only%> confidently*<%end%></h1>
+  <% else %>
+  <h1>Studies observing <%= @taxonomy %><%if @confident_only%> confidently*<%end%></h1>
+  <% end %>
+
+  <p>Example taxonomy of one of these: <%= @example_taxonomy.taxonomy_as_array.join('; ')%><p>
+
   <table class="table">
     <thead>
       <tr>
@@ -12,11 +19,20 @@
 
     <% @grouped_clusters.each_with_index do |proj_cl, i|
       cluster = proj_cl.cluster %>
-      <tr><td><%=i+1%></td>
-      <td><%= link_to cluster.sra.study_accession, study_with_prokmsa_ids_url(cluster.sra.study_accession, @taxonomy_ids.join(',')) %></td>
-      <td><%= cluster.sra.study_title %></td>
-      <td><%= link_to "#{proj_cl.human_max_percent}%", run_url(cluster.sra_run_id) %></td>
+      <tr>
+        <td><%=i+1%></td>
+        <% if @mode == :prokmsa %>
+          <td><%= link_to cluster.sra.study_accession, study_with_prokmsa_ids_url(cluster.sra.study_accession, @taxonomy_ids.join(',')) %></td>
+        <% else %>
+          <td><%= link_to cluster.sra.study_accession, study_with_taxonomy_url(cluster.sra.study_accession, @taxonomy) %></td>
+        <% end %>
+        <td><%= cluster.sra.study_title %></td>
+        <td><%= link_to "#{proj_cl.human_max_percent}%", run_url(cluster.sra_run_id) %></td>
       </tr>
     <% end %>
   </table>
+
+  <% if @confident_only %>
+  * 'confidently' is defined here as at least 97% identity over at least 100bp.
+  <% end %>
 </div>

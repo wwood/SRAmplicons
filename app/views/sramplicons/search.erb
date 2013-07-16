@@ -1,47 +1,52 @@
 <div class="container">
-  <h1>Search for SRA studies by taxonomy</h1>
+  <h1>Search for SRA pyrotag studies</h1>
 
   <div class="row">
     <div class="span12">
-      <h2>Search by taxonomy</h2>
-      <form action='taxonomy'>
-        <p>A taxonomy</p>
+      <h2>.. by taxonomy</h2>
+      <form action=<%=search_by_taxonomy_url%>>
         <input type="textarea" rows="3" cols="25" name="q" placeholder="f__ANME-2D"/>
-        <input class="btn" type="submit" value="Search" />
+        <button type="submit" class="btn">Search</button>
+        <label class="checkbox">
+          <input type="checkbox" name="confident_only" checked="true">restrict search to confidently assigned sequence clusters
+        </label>
       </form>
     </div>
   </div>
 
   <div class="row">
     <div class="span12">
-      <h2>Search by prokMSA identifier(s)</h2>
-      <form action='overview'>
-        <p>A whitespace or comma-separated list</p>
+      <h2>.. by prokMSA identifier(s)</h2>
+      <form action=<%=search_by_prokmsa_url%>>
+        <span class="help-block">A whitespace or comma-separated list</span>
         <input type="textarea" rows="3" cols="25" name="tax_ids" placeholder="155406, 4417848"></input>
-        <input class="btn" type="submit" value="Search" />
+        <button type="submit" class="btn">Search</button>
+        <label class="checkbox">
+          <input type="checkbox" name="confident_only" checked="true">restrict search to confidently assigned sequence clusters
+        </label>
       </form>
     </div>
   </div>
 
   <div class="row">
     <div class="span12">
-      <h2>Search studies by accession</h2>
-      <form action='search_by_sra'>
-        <p>An SRA accession</p>
-        <input type="textarea" rows="3" cols="25" name="accession" placeholder="SRR617581"></input>
-        <input class="btn" type="submit" value="Search" />
-      </form>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="span12">
-      <h2>Search studies by keyword</h2>
-      <form action='search_by_keyword'>
-        <p>A single keyword</p>
+      <h2>.. by keyword</h2>
+      <form action=<%=search_by_keyword_url%>>
+        <span class="help-block">A singular keyword</span>
         <input type="textarea" rows="3" cols="25" name="keyword" placeholder="methane"></input>
-        <input class="btn" type="submit" value="Search" />
+        <button type="submit" class="btn">Search</button>
       </form>
     </div>
   </div>
+
+  <div class="row">
+    <div class="span12">
+      <h2>.. by SRA accession</h2>
+      <form action=<%=search_by_sra_url%>>
+        <input type="textarea" rows="3" cols="25" name="accession" placeholder="SRR617581"></input>
+        <button type="submit" class="btn">Search</button>
+      </form>
+    </div>
+  </div>
+
 </div>

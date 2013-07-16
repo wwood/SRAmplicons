@@ -1,8 +1,9 @@
 require 'bio-krona'
+require 'bio-sra'
 require 'pp'
 
 class SrampliconsController < ApplicationController
-  @@confident_assignment_clause = 'best_hit_length > 99 and best_hit_percent_identity >= 97'
+  caches_action :index
 
   def index
     @num_datasets = Cluster.select('distinct(sra_run_id)').count
@@ -45,34 +46,48 @@ class SrampliconsController < ApplicationController
     render :partial => 'run_iframe'
   end
 
-  def overview
+  def prokmsa
     @taxonomy_ids = params['tax_ids'].split(/[\s,;]+/)
+    @confident_only = confident_only?(params)
 
     # Find all those studies which include at least one of those representatives
-    activerecord_fragment = Cluster.where(best_hit_id: @taxonomy_ids).where(@@confident_assignment_clause)
+    activerecord_fragment = Cluster.where(best_hit_id: @taxonomy_ids)
+    activerecord_fragment = activerecord_fragment.confidently_assigned if @confident_only
     initial_clusters = activerecord_fragment.order('sum(num_sequences) desc').limit(100).group('sra_run_id')
 
     @grouped_clusters = order_initial_clusters(initial_clusters, activerecord_fragment)
+    @example_taxonomy = @grouped_clusters[0].cluster.taxonomy
+    @mode = :prokmsa
+    render :action => :overview
   end
 
   def taxonomy
     @taxonomy = params['q'].strip
+    @confident_only = confident_only?(params)
 
     if column = Taxonomy.guess_column_from_name(@taxonomy)
+      @example_taxonomy = Taxonomy.where(column => @taxonomy).first
+
       where_key = "taxonomies.#{column}"
-      activerecord_fragment = Cluster.joins(:taxonomy).where(where_key => @taxonomy).where(@@confident_assignment_clause)
+      activerecord_fragment = Cluster.joins(:taxonomy).where(where_key => @taxonomy)
+
+      activerecord_fragment = activerecord_fragment.confidently_assigned if @confident_only
       initial_clusters = activerecord_fragment.order('sum(num_sequences) desc').limit(100).group('sra_run_id')
 
       @grouped_clusters = order_initial_clusters(initial_clusters, activerecord_fragment)
     else
       raise "Can only work with greengenes IDs at the moment sorry."
     end
+    @mode == :taxonomy
+    render :action => :overview
   end
 
   def study
     @study_id = params['study_id']
     @prokmsa_ids = params['prokmsa_ids']
     @taxonomy_id = params['taxonomy_id']
+    @confident_only = confident_only?(params)
+
     @mode = nil
     if @taxonomy_id
       @mode = :taxonomy
@@ -91,15 +106,25 @@ class SrampliconsController < ApplicationController
     end
 
     if @mode == :prokmsa
-      @run_ids = Cluster.where(best_hit_id: @prokmsa_ids).where(sra_run_id: @all_run_ids).select('distinct(sra_run_id)').collect do |cluster|
+      query = Cluster.
+        where(best_hit_id: @prokmsa_ids).
+        where(sra_run_id: @all_run_ids).
+        select('distinct(sra_run_id)')
+      query = query.confidently_assigned if @confident_only
+
+      @run_ids = query.collect do |cluster|
         cluster.sra_run_id
       end
     else
       column = Taxonomy.guess_column_from_name(@taxonomy_id)
       @taxonomy_where_column = "taxonomies.#{column}"
-      @run_ids = Cluster.joins(:taxonomy).where(
-        @taxonomy_where_column => @taxonomy_id).where(
-        sra_run_id: @all_run_ids).select('distinct(sra_run_id)').collect do |cluster|
+      query = Cluster.joins(:taxonomy).
+        where(@taxonomy_where_column => @taxonomy_id).
+        where(sra_run_id: @all_run_ids).
+        select('distinct(sra_run_id)')
+      query = query.confidently_assigned if @confident_only
+
+      @run_ids = query.collect do |cluster|
         cluster.sra_run_id
       end
     end
@@ -146,6 +171,7 @@ class SrampliconsController < ApplicationController
     # Better yet would be a proper text searching framework. Should I leave this to NCBI?
     @keyword = params['keyword'].strip
     for_sql = "%#{@keyword}%"
+    raise unless @keyword.length > 1
     sra_run_ids = Bio::SRA::Tables::SRA.where(
       'study_abstract like ? or study_description like ?',for_sql,for_sql).select(
       'run_accession').collect{|s| s.run_accession}
@@ -190,6 +216,12 @@ class SrampliconsController < ApplicationController
       -(a.max_percentage <=> b.max_percentage)
     end
   end
+
+  # Parse confident_search in a consistent way
+  def confident_only?(params)
+    confidence = params['confident_only']
+    return (confidence == 'on')
+  end
 end
 
 
@@ -218,10 +250,59 @@ class Bio::SRA::Tables::SRA
   # Return the sample attributes as an array of triple values,
   # with a triple for each sample attribute
   def sample_attributes_array
-    return [] if sample_attribute.nil? or sample_attribute.strip == ''
+    SRASampleAttributes.new(sample_attribute)
+  end
 
-    return sample_attribute.split(' || ').collect do |attribute_pair|
-      splits = attribute_pair.split(': ')
+  # Attempt to discern the longtitude and latitude from the metadata,
+  # and return them as an array. Return nil if not possible.
+  #
+  # Data types to go:
+  # ERR011357: 'geographic location (latitude and longitude) => 60.171350 N 25.005533 E'
+  def longitude_latitude
+    attrs = sample_attributes_array
+
+    longitude = attrs.first_matching('longitude') #e.g. SRR027089
+    longitude ||= attrs.first_matching('Geographic location (longitude)') #e.g. ERR193639
+
+    latitude = attrs.first_matching('latitude')
+    latitude ||= attrs.first_matching('Geographic location (latitude)')
+
+    if longitude and latitude
+      if longitude[1].match(/^\d+\.\d+$/) and latitude[1].match(/^\d+\.\d+$/)
+        return longitude[1].to_f, latitude[1].to_f
+      else
+        # Hell begins here. e.g. ERR011387 => 40º 02’ N
+        return nil
+      end
+    elsif hit = attrs.first_matching('lat_lon')
+      if matches = hit[1].match(/^(\d+\.\d+) (\d+\.\d+)$/)
+        return matches[1].to_f, matches[2].to_f
+      else
+        return nil
+      end
+    else
+      return nil
+    end
+  end
+end
+
+# A class to manipulate the sample_attributes info in the SRA table
+class SRASampleAttributes
+
+
+  def initialize(sample_attributes)
+    @attributes = []
+    unless sample_attributes.nil? or sample_attributes.strip == ''
+      @attributes = sample_attributes.split(' || ')
+    end
+
+    @attributes = @attributes.collect do |attribute|
+      @attributes = attribute.split(': ')
+    end
+  end
+
+  def threesomes
+    @attributes.each do |splits|
       if splits.length == 3
         splits
       elsif splits.length < 3 #hack
@@ -234,6 +315,14 @@ class Bio::SRA::Tables::SRA
           splits[splits.length-1]
         ]
       end
+    end
+  end
+
+  # Return the first entry that has attribute name == key,
+  # compared case insensitively
+  def first_matching(key)
+    @attributes.find do |a|
+      a[0].downcase == key.downcase
     end
   end
 end

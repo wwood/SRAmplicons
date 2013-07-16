@@ -15,10 +15,12 @@
       <li><%= link_to 'Search', scholar_url(@run) %> for publications referring to this study by accession</li>
     </ul>
 
+    long/lat: <%= @run.longitude_latitude.inspect%>
+
     <% if @run.sample_attribute %>
       <h3>Specifics for this run (<%= @run.run_accession %>):</h3>
       <table class="table">
-        <% @run.sample_attributes_array.each do |tr| %>
+        <% @run.sample_attributes_array.threesomes.each do |tr| %>
           <tr>
             <td><%= tr[0] %></td>
             <td><%= tr[1] %></td>
