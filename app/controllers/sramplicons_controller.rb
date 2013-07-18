@@ -25,13 +25,11 @@ class SrampliconsController < ApplicationController
 
   def run_iframe
     run = params['run_id']
-    puts "Working with run: #{run}"
 
     # Extract a list of taxonomy arrays to num_sequences in that cluster
     # Some clusters will have the same taxonomy information, so need
     # to make each have unique taxonomy info artificially
     clusters = Cluster.includes(:taxonomy).where(:sra_run_id => run).load
-    puts "Found #{clusters.length} clusters in this run id"
     for_krona = {}
     clusters.each do |cluster|
       key = ['unassigned']
