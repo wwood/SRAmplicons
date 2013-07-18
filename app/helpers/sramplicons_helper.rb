@@ -10,4 +10,8 @@ module SrampliconsHelper
 
     return "http://scholar.google.com.au/scholar?q=#{q}&hl=en&as_sdt=2001&as_sdtp=on"
   end
+
+  def pubmed_fulltext_url(pubmed_id)
+    "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&id=#{pubmed_id}&retmode=ref&cmd=prlinks"
+  end
 end
