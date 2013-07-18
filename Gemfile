@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 gem 'systemu'
 gem 'bio'
 #gem 'bio-sra'
-#gem 'bio-krona'
+gem 'bio-krona'
 gem 'bio-logger'
 gem 'actionpack-action_caching'
 
