@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130713050124) do
+ActiveRecord::Schema.define(version: 20130713045817) do
 
   create_table "clusters", force: true do |t|
     t.string  "sra_run_id",                null: false
@@ -27,6 +27,52 @@ ActiveRecord::Schema.define(version: 20130713050124) do
   add_index "clusters", ["best_hit_id"], name: "index_clusters_on_best_hit_id"
   add_index "clusters", ["num_sequences"], name: "index_clusters_on_num_sequences"
   add_index "clusters", ["sra_run_id"], name: "index_clusters_on_sra_run_id"
+
+# Could not dump table "col_desc" because of following NoMethodError
+#   undefined method `[]' for nil:NilClass
+
+# Could not dump table "experiment" because of following NoMethodError
+#   undefined method `[]' for nil:NilClass
+
+  create_table "metaInfo", id: false, force: true do |t|
+    t.string "name",  limit: 50
+    t.string "value", limit: 50
+  end
+
+# Could not dump table "run" because of following NoMethodError
+#   undefined method `[]' for nil:NilClass
+
+# Could not dump table "sample" because of following NoMethodError
+#   undefined method `[]' for nil:NilClass
+
+# Could not dump table "sra" because of following NoMethodError
+#   undefined method `[]' for nil:NilClass
+
+# Could not dump table "sra_ft" because of following NoMethodError
+#   undefined method `[]' for nil:NilClass
+
+# Could not dump table "sra_ft_content" because of following NoMethodError
+#   undefined method `[]' for nil:NilClass
+
+  create_table "sra_ft_segdir", primary_key: "level", force: true do |t|
+    t.integer "idx"
+    t.integer "start_block"
+    t.integer "leaves_end_block"
+    t.integer "end_block"
+    t.binary  "root"
+  end
+
+  add_index "sra_ft_segdir", ["level", "idx"], name: "sqlite_autoindex_sra_ft_segdir_1", unique: true
+
+  create_table "sra_ft_segments", primary_key: "blockid", force: true do |t|
+    t.binary "block"
+  end
+
+# Could not dump table "study" because of following NoMethodError
+#   undefined method `[]' for nil:NilClass
+
+# Could not dump table "submission" because of following NoMethodError
+#   undefined method `[]' for nil:NilClass
 
   create_table "taxonomies", force: true do |t|
     t.integer "taxonomy_id", null: false

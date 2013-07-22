@@ -170,10 +170,12 @@ class SrampliconsController < ApplicationController
     @keyword = params['keyword'].strip
     for_sql = "%#{@keyword}%"
     raise unless @keyword.length > 1
-    sra_run_ids = Bio::SRA::Tables::SRA.where(
+
+
+    sra_run_ids = Sra.where(
       'study_abstract like ? or study_description like ?',for_sql,for_sql).select(
       'run_accession').collect{|s| s.run_accession}
-    cap = 10000
+    cap = 1000
     @example_clusters = Cluster.where(:sra_run_id => sra_run_ids).select('distinct(sra_run_id)').limit(cap).to_a
     @possibly_more = (@example_clusters.length == cap)
     @example_clusters.uniq! do |c|
@@ -185,15 +187,15 @@ class SrampliconsController < ApplicationController
   # Given a list of clusters, order them such that the ones with
   # the highest abundance are first, and they are grouped by study.
   # Returned as an array of ProjectCluster objects
-  def order_initial_clusters(initial_clusters, activerecord_fragment)
+  def order_initial_clusters(initial_clusters, activerecord_fragment)1
     project_clusters = {}
-    initial_clusters.each do |c|
+    initial_clusters.includes(:sra).each do |c|
       # Work out the relative abundance. This could
       # probably be less computationally intensive, but oh well.
       # Effectively need to join across 2 distinct databases,
       # which isn't possible.
-      num_with_them = activerecord_fragment.where(sra_run_id: c.sra_run_id).reduce(0){|old, c| old += c.num_sequences}
-      num_total = Cluster.where(sra_run_id: c.sra_run_id).reduce(0){|old, c| old+=c.num_sequences}
+      num_with_them = activerecord_fragment.select('sum(num_sequences) as num_sequences').where(sra_run_id: c.sra_run_id).first.num_sequences
+      num_total = Cluster.select('sum(num_sequences) as num_sequences').where(sra_run_id: c.sra_run_id).first.num_sequences
       relative_abundance = num_with_them.to_f/num_total
 
       proj = c.sra.study_accession
