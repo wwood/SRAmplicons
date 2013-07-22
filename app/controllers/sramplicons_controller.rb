@@ -13,7 +13,7 @@ class SrampliconsController < ApplicationController
   def run
     @run_id = params['run_id']
 
-    runs = Bio::SRA::Tables::SRA.where(run_accession: @run_id).to_a
+    runs = Sra.where(run_accession: @run_id).to_a
     raise unless runs.length == 1
     @run = runs[0]
 
@@ -98,7 +98,8 @@ class SrampliconsController < ApplicationController
     end
 
     @example_run = nil
-    @all_run_ids = Bio::SRA::Tables::SRA.where(study_accession: @study_id).collect do |s|
+    # These SQL statements could be consolidated now there's only 1 db, but eh
+    @all_run_ids = Sra.where(study_accession: @study_id).collect do |s|
       @example_run ||= s
       s.run_accession
     end
@@ -152,14 +153,14 @@ class SrampliconsController < ApplicationController
 
   def study_generic
     @study_id = params['study_id']
-    @example_run = Bio::SRA::Tables::SRA.where(study_accession: @study_id).first
-    @runs = Bio::SRA::Tables::SRA.where(study_accession: @study_id)
+    @example_run = Sra.where(study_accession: @study_id).first
+    @runs = Sra.where(study_accession: @study_id)
   end
 
   def search_by_sra
     query = params['accession'].strip
     column = Bio::SRA::Accession.accession_to_column_name query
-    eg = Bio::SRA::Tables::SRA.where(column => query).first
+    eg = Sra.where(column => query).first
     redirect_to study_url(eg.study_accession)
   end
 
