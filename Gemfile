@@ -7,6 +7,7 @@ gem 'bio'
 gem 'bio-krona'
 gem 'bio-logger'
 gem 'actionpack-action_caching'
+gem 'bio-sra', "~> 0.2"
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.0.0'

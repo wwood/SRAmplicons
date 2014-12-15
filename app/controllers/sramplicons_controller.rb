@@ -67,6 +67,14 @@ class SrampliconsController < ApplicationController
 
     if column = Taxonomy.guess_column_from_name(@taxonomy)
       @example_taxonomy = Taxonomy.where(column => @taxonomy).first
+      if @example_taxonomy.nil?
+        @example_taxonomy = Taxonomy.where(["#{column} like ?", "%#{@taxonomy}%"]).first
+        if @example_taxonomy.nil?
+          flash[:error] = "Unable to find taxonomy `#{taxonomy}'"
+        else
+          @taxonomy = @example_taxonomy.send(column)
+        end
+      end
 
       where_key = "taxonomies.#{column}"
       activerecord_fragment = Cluster.joins(:taxonomy).where(where_key => @taxonomy)
