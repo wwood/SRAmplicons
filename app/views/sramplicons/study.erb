@@ -9,7 +9,7 @@
   <ul>
     <li>Submitted <%= @example_run.submission_date %> under <%=@example_run.submission_accession%></li>
     <li><%= link_to 'View', "http://www.ncbi.nlm.nih.gov/sra?term=#{@example_run.study_accession}" %> this study at NCBI</li>
-    <% if @pubmed_id %><li><%= link_to 'PubMed publication', "http://www.ncbi.nlm.nih.gov/pubmed?term=#{@pubmed_id}" %> (<%= link_to 'full text', 'http://fail' %>)</li><% end %>
+    <% if @pubmed_id %><li><%= link_to 'PubMed publication', "http://www.ncbi.nlm.nih.gov/pubmed?term=#{@pubmed_id}" %> (<%= link_to 'full text', pubmed_fulltext_url(@pubmed_id) %>)</li><% end %>
     <li><%= link_to 'Search', scholar_url(@example_run) %> for publications referring to this study by accession</li>
   </ul>
 
